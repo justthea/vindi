@@ -4,70 +4,139 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vindi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --ink: #16181d; --muted: #5f6672; --line: #e2e5ea; --bg: #f6f7f9; --card: #fff;
-    --accent: #1f3fd1; --red: #b42318; --red-bg: #fdecea; --orange: #a4500f; --orange-bg: #fdf0e3;
-    --gray-bg: #eef0f3; --green: #1d6b3a; --green-bg: #e6f4ea; --blue: #1b4f8f; --blue-bg: #e7f0fb;
+    --bg: #0b0a12; --bg2: #13111d; --card: #17152a; --line: #2a2640; --ink: #f6f3ff; --muted: #a29cbd;
+    --pink: #ff2d87; --cyan: #22e4ff; --lime: #c6ff3d; --yellow: #ffd23f; --violet: #9b6bff; --orange: #ff8a3d;
+    --grad: linear-gradient(100deg, #ff2d87 0%, #9b6bff 50%, #22e4ff 100%);
   }
   * { box-sizing: border-box; }
-  body { margin: 0; font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif; color: var(--ink); background: var(--bg); }
-  main { max-width: 880px; margin: 0 auto; padding: 28px 18px 80px; }
-  h1 { font: 700 26px/1.2 ui-monospace, "SF Mono", Menlo, monospace; margin: 0; }
-  .tagline { color: var(--muted); margin: 4px 0 20px; }
-  .banner { padding: 10px 14px; border-radius: 8px; margin-bottom: 14px; background: var(--orange-bg); color: var(--orange); font-weight: 600; }
-  .banner.error { background: var(--red-bg); color: var(--red); }
-  form, .card, .statusbar { background: var(--card); border: 1px solid var(--line); border-radius: 10px; }
-  form { padding: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px; }
-  label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
-  input[type=text], textarea { width: 100%; margin-top: 4px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 7px; font: inherit; color: inherit; background: #fff; }
-  input[type=text]:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  body {
+    margin: 0; color: var(--ink); background: var(--bg);
+    font: 15px/1.55 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background-image:
+      radial-gradient(900px 500px at 85% -10%, rgba(155,107,255,.28), transparent 60%),
+      radial-gradient(700px 420px at -10% 10%, rgba(255,45,135,.22), transparent 60%),
+      radial-gradient(800px 500px at 50% 110%, rgba(34,228,255,.12), transparent 60%);
+    background-attachment: fixed; min-height: 100vh;
+  }
+  main { max-width: 920px; margin: 0 auto; padding: 28px 16px 90px; overflow-wrap: anywhere; }
+  html, body { overflow-x: hidden; }
+  form > *, .stat, .card { min-width: 0; }
+  .display { font-family: "Bricolage Grotesque", Inter, sans-serif; }
+
+  /* header */
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 26px; }
+  .logo { display: flex; align-items: center; gap: 10px; font: 800 24px/1 "Bricolage Grotesque", sans-serif; letter-spacing: -.02em; }
+  .logo-mark { width: 36px; height: 36px; border-radius: 11px; background: var(--grad); display: grid; place-items: center; color: #0b0a12; font-size: 20px; font-weight: 800; box-shadow: 0 0 24px rgba(255,45,135,.45); transform: rotate(-6deg); }
+  .pill { font-size: 12px; font-weight: 600; padding: 6px 11px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); background: rgba(255,255,255,.03); white-space: nowrap; }
+  .pill b { color: var(--cyan); font-weight: 700; }
+
+  /* hero */
+  .hero h1 { font: 800 clamp(36px, 7vw, 64px)/.98 "Bricolage Grotesque", sans-serif; letter-spacing: -.035em; margin: 0; }
+  .grad-text { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero p { color: var(--muted); font-size: 17px; margin: 14px 0 24px; max-width: 560px; }
+
+  .banner { padding: 11px 15px; border-radius: 14px; margin-bottom: 16px; background: rgba(255,210,63,.12); border: 1px solid rgba(255,210,63,.4); color: var(--yellow); font-weight: 600; }
+  .banner.error { background: rgba(255,45,135,.12); border-color: rgba(255,45,135,.5); color: #ff7bb0; }
+
+  /* form */
+  form { background: rgba(23,21,42,.82); backdrop-filter: blur(10px); border: 1px solid var(--line); border-radius: 22px; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+  label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .02em; }
+  input[type=text], textarea { width: 100%; margin-top: 6px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 13px; font: inherit; color: var(--ink); background: var(--bg2); transition: border-color .15s, box-shadow .15s; }
+  input::placeholder, textarea::placeholder { color: #5f5a78; }
+  input[type=text]:focus, textarea:focus { outline: none; border-color: var(--pink); box-shadow: 0 0 0 3px rgba(255,45,135,.22); }
   .full { grid-column: 1 / -1; }
   .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-  .check { text-transform: none; letter-spacing: 0; font-size: 14px; font-weight: 400; color: var(--ink); display: flex; gap: 8px; align-items: center; }
-  button { font: inherit; font-weight: 600; padding: 9px 14px; border-radius: 7px; border: 1px solid var(--line); background: #fff; color: var(--ink); cursor: pointer; }
-  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .check { font-size: 13px; font-weight: 500; color: var(--muted); display: flex; gap: 8px; align-items: center; }
+  .check input { accent-color: var(--pink); width: 16px; height: 16px; }
+
+  button { font: inherit; font-weight: 700; padding: 11px 18px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255,255,255,.04); color: var(--ink); cursor: pointer; transition: transform .12s, box-shadow .15s, background .15s; }
+  button:hover:not(:disabled) { transform: translateY(-1px); background: rgba(255,255,255,.08); }
+  button.primary { background: var(--grad); border: 0; color: #0b0a12; box-shadow: 0 8px 28px rgba(255,45,135,.35); }
+  button.primary:hover:not(:disabled) { background: var(--grad); box-shadow: 0 10px 34px rgba(255,45,135,.5); }
+  button.big { font: 800 17px/1 "Bricolage Grotesque", sans-serif; padding: 16px 26px; }
   button:disabled { opacity: .55; cursor: default; }
-  button.small { padding: 6px 10px; font-size: 13px; }
-  .statusbar { margin: 16px 0 10px; padding: 12px 14px; display: none; }
+  button.small { padding: 8px 14px; font-size: 13px; }
+
+  /* status + stats */
+  .statusbar { margin: 22px 0 12px; display: none; }
   .statusbar.on { display: block; }
-  .progress { height: 4px; background: var(--gray-bg); border-radius: 2px; overflow: hidden; margin-top: 8px; }
-  .progress > div { height: 100%; width: 0; background: var(--accent); transition: width .25s; }
-  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
-  .chip { padding: 6px 12px; border-radius: 999px; font-size: 13px; }
-  .chip.on { background: var(--ink); border-color: var(--ink); color: #fff; }
-  .card { padding: 14px 16px; margin-bottom: 10px; }
-  .card h3 { margin: 6px 0 2px; font-size: 16px; }
+  #statusText { color: var(--muted); font-size: 14px; }
+  .progress { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; margin-top: 10px; }
+  .progress > div { height: 100%; width: 0; background: var(--grad); border-radius: 99px; transition: width .3s; box-shadow: 0 0 14px rgba(34,228,255,.6); }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0 6px; }
+  .stats[hidden] { display: none; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 14px 16px; }
+  .stat .n { font: 800 34px/1 "Bricolage Grotesque", sans-serif; letter-spacing: -.02em; }
+  .stat .l { color: var(--muted); font-size: 12px; font-weight: 600; margin-top: 6px; }
+  .stat.s1 .n { color: var(--cyan); } .stat.s2 .n { color: var(--pink); } .stat.s3 .n { color: var(--lime); }
+
+  /* filter chips */
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
+  .chip { padding: 8px 14px; font-size: 13px; }
+  .chip.on { background: var(--ink); border-color: var(--ink); color: #0b0a12; }
+
+  /* cards */
+  .card { --c: var(--muted); position: relative; background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 16px 18px 16px 22px; margin-bottom: 12px; overflow: hidden; animation: pop .35s ease both; }
+  .card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--c); box-shadow: 0 0 18px var(--c); }
+  .card.l-unauthorized_commercial { --c: var(--pink); }
+  .card.l-claimed_endorsement { --c: var(--orange); }
+  .card.l-unclear { --c: var(--yellow); }
+  .card.l-editorial_or_fan { --c: var(--cyan); }
+  .card.l-authorized_or_own { --c: var(--lime); }
+  @keyframes pop { from { opacity: 0; transform: translateY(8px) scale(.985); } to { opacity: 1; transform: none; } }
+  .card h3 { margin: 8px 0 2px; font: 700 18px/1.25 "Bricolage Grotesque", sans-serif; letter-spacing: -.01em; }
   .card h3 a { color: inherit; text-decoration: none; }
-  .card h3 a:hover { text-decoration: underline; }
+  .card h3 a:hover { text-decoration: underline; text-decoration-color: var(--c); }
   .domain { color: var(--muted); font-size: 13px; }
-  .badge { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 700; }
-  .b-unauthorized_commercial { background: var(--red-bg); color: var(--red); }
-  .b-claimed_endorsement { background: var(--orange-bg); color: var(--orange); }
-  .b-unclear { background: var(--gray-bg); color: var(--muted); }
-  .b-editorial_or_fan { background: var(--blue-bg); color: var(--blue); }
-  .b-authorized_or_own { background: var(--green-bg); color: var(--green); }
-  blockquote { margin: 10px 0 8px; padding: 8px 12px; border-left: 3px solid var(--line); background: var(--bg); border-radius: 0 6px 6px 0; }
-  .meta { color: var(--muted); font-size: 13px; display: flex; gap: 12px; flex-wrap: wrap; margin: 6px 0 10px; }
-  .meta a { color: var(--accent); }
-  .empty { text-align: center; color: var(--muted); padding: 34px 10px; }
-  dialog { width: min(760px, 94vw); border: 1px solid var(--line); border-radius: 12px; padding: 0; }
-  dialog::backdrop { background: rgba(15, 18, 25, .45); }
-  .dlg { padding: 18px 20px 20px; }
-  .dlg h2 { margin: 0 0 4px; font-size: 18px; }
-  .panel { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin: 12px 0; background: var(--bg); font-size: 14px; }
-  .panel dl { margin: 0; display: grid; grid-template-columns: 150px 1fr; gap: 4px 10px; }
-  .panel dt { color: var(--muted); } .panel dd { margin: 0; }
+  .badge { display: inline-block; padding: 4px 11px; border-radius: 999px; font-size: 12px; font-weight: 800; color: #0b0a12; background: var(--c); }
+  blockquote { margin: 12px 0 10px; padding: 10px 14px; border-radius: 14px; background: var(--bg2); border: 1px dashed var(--line); font-size: 15px; }
+  blockquote::before { content: "“"; color: var(--c); font: 800 22px/0 "Bricolage Grotesque", sans-serif; margin-right: 4px; vertical-align: -6px; }
+  .reason { color: #d7d1ee; }
+  .meta { color: var(--muted); font-size: 12.5px; display: flex; gap: 6px 14px; flex-wrap: wrap; margin: 10px 0 12px; }
+  .meta a { color: var(--cyan); font-weight: 600; }
+  .empty { text-align: center; color: var(--muted); padding: 40px 10px; border: 1px dashed var(--line); border-radius: 20px; }
+
+  /* draft dialog */
+  dialog { width: min(780px, 94vw); border: 1px solid var(--line); border-radius: 24px; padding: 0; background: var(--bg2); color: var(--ink); box-shadow: 0 30px 90px rgba(0,0,0,.6); }
+  dialog::backdrop { background: rgba(6,5,12,.7); backdrop-filter: blur(4px); }
+  .dlg { padding: 22px 24px 24px; }
+  .dlg h2 { margin: 0 0 4px; font: 800 22px/1.2 "Bricolage Grotesque", sans-serif; letter-spacing: -.01em; }
+  .dlg .domain a { color: var(--cyan); }
+  .panel { border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; margin: 14px 0; background: var(--card); font-size: 14px; }
+  .panel strong { display: block; margin-bottom: 8px; color: var(--lime); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+  .panel dl { margin: 0; display: grid; grid-template-columns: 150px 1fr; gap: 6px 12px; }
+  .panel dt { color: var(--muted); text-transform: capitalize; } .panel dd { margin: 0; }
   .panel pre { white-space: pre-wrap; font: inherit; margin: 0; }
-  textarea#body { min-height: 230px; }
-  .fine { color: var(--muted); font-size: 12px; margin-top: 10px; }
-  @media (max-width: 640px) { form { grid-template-columns: 1fr; } .panel dl { grid-template-columns: 1fr; } }
+  .panel .meta a { color: var(--cyan); }
+  textarea#body { min-height: 230px; line-height: 1.55; }
+  #evidence { color: var(--lime); font-weight: 600; }
+  .fine { color: var(--muted); font-size: 12px; margin-top: 12px; }
+
+  @media (max-width: 640px) {
+    form { grid-template-columns: 1fr; }
+    .panel dl { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .stat .n { font-size: 26px; }
+    .top .pill { display: none; }
+  }
 </style>
 </head>
 <body>
 <main>
-  <h1>&gt;_ Vindi</h1>
-  <p class="tagline">Find who is selling with your name, and turn them into paying partners.</p>
+  <header class="top">
+    <div class="logo"><span class="logo-mark">V</span>Vindi</div>
+    <span class="pill">Live web search by <b>You.com</b></span>
+  </header>
+
+  <section class="hero">
+    <h1>Who's cashing in on <span class="grad-text">your name?</span></h1>
+    <p>Find every store selling with your name, handle or catchphrase. Then turn them into paying partners.</p>
+  </section>
   <div id="banner" class="banner" hidden></div>
 
   <form id="form">
@@ -76,17 +145,22 @@
     <div><label>Catchphrases or product names<input type="text" id="phrases" placeholder="crumb goals"></label></div>
     <div><label>Brands you already work with<input type="text" id="partners" placeholder="King Arthur, Le Creuset"></label></div>
     <div><label>Your own sites<input type="text" id="own" placeholder="danabakes.com"></label></div>
-    <div><label>Your niche (keywords)<input type="text" id="niche" placeholder="baking, sourdough"></label></div>
+    <div><label>Your niche<input type="text" id="niche" placeholder="baking, sourdough"></label></div>
     <div class="full row">
-      <button class="primary" id="go" type="submit">Scan the live web</button>
+      <button class="primary big" id="go" type="submit">Scan the live web</button>
       <button type="button" id="loadCached">Load last saved scan</button>
-      <label class="check"><input type="checkbox" id="strict"> My name is common. Only flag pages that also mention a handle or niche keyword.</label>
+      <label class="check"><input type="checkbox" id="strict"> My name is common. Only flag pages that also mention a handle or niche.</label>
     </div>
   </form>
 
   <div class="statusbar" id="status">
     <div id="statusText"></div>
     <div class="progress"><div id="bar"></div></div>
+  </div>
+  <div class="stats" id="stats" hidden>
+    <div class="stat s1"><div class="n" id="stPages">0</div><div class="l">pages checked</div></div>
+    <div class="stat s2"><div class="n" id="stFlagged">0</div><div class="l">selling with your name</div></div>
+    <div class="stat s3"><div class="n" id="stTime">0s</div><div class="l">scan time</div></div>
   </div>
   <div class="chips" id="chips"></div>
   <div id="list"></div>
@@ -101,11 +175,11 @@
     <div class="domain" id="dSource"></div>
     <div class="panel" id="brief">Looking up this seller&hellip;</div>
     <div class="row">
-      <button class="chip" id="modeDeal" type="button">Offer a deal</button>
-      <button class="chip" id="modeStop" type="button">Ask them to stop</button>
+      <button class="chip" id="modeDeal" type="button">🤝 Offer a deal</button>
+      <button class="chip" id="modeStop" type="button">✋ Ask them to stop</button>
     </div>
-    <label style="margin-top: 12px">Subject<input type="text" id="subject"></label>
-    <label style="margin-top: 10px">Email (edit before sending)<textarea id="body"></textarea></label>
+    <label style="margin-top: 14px">Subject<input type="text" id="subject"></label>
+    <label style="margin-top: 12px">Email (edit before sending)<textarea id="body"></textarea></label>
     <div class="meta" id="evidence"></div>
     <div class="row">
       <button class="primary" id="copy" type="button">Copy email</button>
@@ -118,11 +192,11 @@
 <script>
 const $ = (id) => document.getElementById(id);
 const LABELS = {
-  unauthorized_commercial: 'Selling with your name',
-  claimed_endorsement: 'Claims your endorsement',
-  unclear: 'Needs your review',
-  editorial_or_fan: 'Press or fan page',
-  authorized_or_own: 'Yours or a partner',
+  unauthorized_commercial: '💸 Selling with your name',
+  claimed_endorsement: '📣 Claims you endorse them',
+  unclear: '👀 Needs your review',
+  editorial_or_fan: '📰 Press or fan page',
+  authorized_or_own: '✅ Yours or a partner',
 };
 const RANK = { unauthorized_commercial: 0, claimed_endorsement: 1, unclear: 2, editorial_or_fan: 3, authorized_or_own: 4 };
 const FILTERS = {
@@ -173,15 +247,22 @@ function setStatus(text, fraction) {
   $('statusText').textContent = text;
   if (fraction != null) $('bar').style.width = Math.round(fraction * 100) + '%';
 }
+function updateStats(pages, seconds) {
+  $('stats').hidden = false;
+  if (pages != null) $('stPages').textContent = pages;
+  $('stFlagged').textContent = state.hits.filter(FILTERS.flagged.test).length;
+  if (seconds != null) $('stTime').textContent = Math.round(seconds * 10) / 10 + 's';
+}
 function handleEvent(name, data) {
   if (name === 'status' && data.stage === 'searching') {
-    setStatus(`Searching the live web with You.com: ${data.queries_done} of ${data.queries_total} queries, ${data.pages_checked} results so far`, 0.6 * data.queries_done / Math.max(1, data.queries_total));
+    setStatus(`Searching the live web with You.com: ${data.queries_done} of ${data.queries_total} queries`, 0.6 * data.queries_done / Math.max(1, data.queries_total));
+    updateStats(data.pages_checked, (performance.now() - state.t0) / 1000);
   } else if (name === 'status' && data.stage === 'classifying') {
     setStatus(`Checked ${data.pages_checked} results. Reading ${data.candidates} pages that mention you`, 0.65);
   } else if (name === 'hit') {
-    state.hits.push(data); render();
+    state.hits.push(data); render(); updateStats(null, (performance.now() - state.t0) / 1000);
   } else if (name === 'done') {
-    state.done = data;
+    state.done = data; updateStats(data.pages_checked, data.elapsed_seconds);
     const errors = (data.errors || []).length ? ` ${data.errors.length} step(s) failed and were skipped.` : '';
     setStatus(`Done in ${data.elapsed_seconds}s. ${data.queries} queries, ${data.pages_checked} results checked, ${data.flagged} flagged.` + errors, 1);
     render();
@@ -196,6 +277,7 @@ async function runScan(event) {
   state.identity = readIdentity();
   state.hits = []; state.done = null; state.scanning = true; state.briefs.clear();
   $('go').disabled = true; banner(state.mock ? MOCK_TEXT : '');
+  state.t0 = performance.now(); $('stats').hidden = true;
   render(); setStatus('Starting scan', 0.02);
   try {
     const res = await fetch('/api/scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.identity) });
@@ -228,10 +310,13 @@ async function loadCached() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);
     state.identity = data.identity; state.hits = data.hits; state.done = data.summary;
-    $('name').value = data.identity.name;
+    const id = data.identity, join = (a) => (a || []).join(', ');
+    $('name').value = id.name; $('handles').value = join((id.handles || []).map((h) => '@' + h.replace(/^@/, '')));
+    $('phrases').value = join(id.phrases); $('partners').value = join(id.partners);
+    $('own').value = join(id.own_domains); $('niche').value = join(id.niche); $('strict').checked = !!id.strict_name_match;
     banner('Showing a saved scan from ' + new Date(data.saved_at).toLocaleString() + '. This is not a live result.');
     setStatus(`Saved scan: ${data.summary.pages_checked} results checked, ${data.summary.flagged} flagged.`, 1);
-    render();
+    render(); updateStats(data.summary.pages_checked, data.summary.elapsed_seconds);
   } catch (err) { banner(err.message || 'No saved scan yet', true); }
 }
 
@@ -264,18 +349,18 @@ function card(hit) {
   if (hit.commercial_signal) meta.append(el('span', {}, 'Sale signal: ' + hit.commercial_signal));
   if (hit.page_age) meta.append(el('span', {}, 'Page dated ' + String(hit.page_age).slice(0, 10)));
   meta.append(safeLink(hit.url, 'Open source page'));
-  const node = el('div', { class: 'card' },
+  const node = el('div', { class: 'card l-' + hit.label },
     el('span', { class: 'badge b-' + hit.label }, LABELS[hit.label] || hit.label),
     el('h3', {}, safeLink(hit.url, hit.title || hit.url)),
     el('div', { class: 'domain' }, hit.domain),
     el('blockquote', {}, hit.evidence_quote || hit.description || '(no text captured)'),
-    el('div', {}, hit.reason),
+    el('div', { class: 'reason' }, hit.reason),
     meta,
   );
   if (hit.suggested_action !== 'none') {
     node.append(el('div', { class: 'row' },
-      el('button', { class: 'primary small', type: 'button', onclick: () => openDraft(hit, 'deal') }, 'Offer a deal'),
-      el('button', { class: 'small', type: 'button', onclick: () => openDraft(hit, 'stop') }, 'Ask them to stop'),
+      el('button', { class: 'primary small', type: 'button', onclick: () => openDraft(hit, 'deal') }, '🤝 Offer a deal'),
+      el('button', { class: 'small', type: 'button', onclick: () => openDraft(hit, 'stop') }, '✋ Ask them to stop'),
     ));
   }
   return node;
@@ -356,6 +441,7 @@ $('mail').addEventListener('click', async () => {
 const MOCK_TEXT = 'MOCK DATA. These results are canned fixtures for development, not the live web.';
 $('form').addEventListener('submit', runScan);
 $('loadCached').addEventListener('click', loadCached);
+if (location.hash === '#saved') loadCached(); // shortcut: localhost:8811/#saved opens the backup scan
 fetch('/api/health').then((r) => r.json()).then((h) => {
   state.mock = h.mock;
   if (h.mock) banner(MOCK_TEXT);
