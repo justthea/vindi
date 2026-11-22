@@ -1,8 +1,8 @@
-# Tollbooth
+# Vindi
 
 Find who is selling with a creator's name, and turn them into paying partners.
 
-Tollbooth scans the live web for sellers and brands using a creator's name, handle or catchphrase without a deal. It shows each page with the exact words found and a source link, then drafts a licensing offer or a removal request that the creator edits and sends themselves.
+Vindi scans the live web for sellers and brands using a creator's name, handle or catchphrase without a deal. It shows each page with the exact words found and a source link, then drafts a licensing offer or a removal request that the creator edits and sends themselves.
 
 Built at Creator Economy Hack (localhost:nyc, Nov 22 2026). Track: Creator Business.
 
@@ -63,7 +63,7 @@ Without live search there is no product: listings that use a creator's name appe
 ## Limits
 
 - Text only. It finds names, handles and phrases, not faces in photos or video.
-- A flag means "worth a look", not a legal conclusion. Tollbooth is not a law firm and its drafts are not legal advice.
+- A flag means "worth a look", not a legal conclusion. Vindi is not a law firm and its drafts are not legal advice.
 - Marketplaces often block page fetches. Those cards are marked "Snippet only".
 
 ## Layout

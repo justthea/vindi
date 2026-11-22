@@ -1,1 +1,1 @@
-"""Tollbooth: find who is selling with a creator's name."""
+"""Vindi: find who is selling with a creator's name."""
