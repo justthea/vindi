@@ -29,6 +29,8 @@ Rules:
 - commercial_signal: the price, buy-button text or ad wording you saw. Empty string if none.
 - confidence: a number from 0 to 1.
 - reason: one plain sentence of at most 30 words describing what the page does. No legal conclusions. Never use the word "infringement".
+- An article, interview or list where the creator themself names products they like (e.g. "things X can't live without", "X's favorite products", "books recommended by X") is editorial_or_fan, not claimed_endorsement. claimed_endorsement is for a seller's own page or ad claiming the creator backs its product.
+- Coupon or promo-code sites that use the creator's name to attract clicks are unauthorized_commercial.
 - When in doubt, choose unclear.
 
 Return only JSON, no prose:
