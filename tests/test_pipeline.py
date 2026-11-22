@@ -156,3 +156,44 @@ def test_full_scan_in_mock_mode():
     assert all(h["quote_verified"] for h in hits if h["label"] != "unclear")
     done = events[-1]["data"]
     assert done["duplicates"] >= 1 and done["flagged"] >= 3 and done["errors"] == []
+
+
+def test_resale_marketplaces_are_recognized():
+    from app.pipeline import is_resale_marketplace
+
+    for d in ["ebay.com", "www.ebay.co.uk", "ebay.de", "poshmark.com", "gem.app", "depop.com", "mercari.com", "stockx.com"]:
+        assert is_resale_marketplace(d), d
+    for d in ["etsy.com", "redbubble.com", "amazon.com", "notebay.com", "gem.com", "kyliejennermerch.shop"]:
+        assert not is_resale_marketplace(d), d
+
+
+def test_finalize_never_flags_resale_as_unauthorized():
+    hit = raw(
+        url="https://www.ebay.com/itm/123",
+        title="Dana Rivera Limited Edition Hoodie",
+        text="Dana Rivera Limited Edition Hoodie size S. Pre-owned. $40",
+        id="h1",
+        matched_identifier="Dana Rivera",
+        match_kind="name",
+    )
+    v = Verdict(id="h1", label="unauthorized_commercial", evidence_quote="Dana Rivera Limited Edition Hoodie", confidence=0.9)
+    out = finalize(hit, v, DANA)
+    assert out.label == "unclear" and out.confidence <= 0.5 and out.suggested_action == "review"
+    assert "resale" in out.reason.lower()
+
+    # A new-product listing on a print-on-demand site is still flagged.
+    pod = raw(url="https://www.redbubble.com/i/1", title="Dana Rivera Hoodie", text="Dana Rivera Hoodie. $34.99", id="h2", matched_identifier="Dana Rivera", match_kind="name")
+    out2 = finalize(pod, Verdict(id="h2", label="unauthorized_commercial", evidence_quote="Dana Rivera Hoodie", confidence=0.9), DANA)
+    assert out2.label == "unauthorized_commercial"
+
+
+def test_coupon_page_for_name_store_is_not_flagged_outright():
+    coupon = raw(url="https://dealdrop.example/x", title="50% Off Dana Rivera Shop Coupons & Promo Codes", text="Dana Rivera Shop coupon codes", id="h1", matched_identifier="Dana Rivera", match_kind="name")
+    v = Verdict(id="h1", label="unauthorized_commercial", evidence_quote="Dana Rivera Shop coupon codes", confidence=0.9)
+    out = finalize(coupon, v, DANA)
+    assert out.label == "unclear" and out.confidence <= 0.5
+
+    # A fake store page with "Shop" in its title but no coupons is still flagged.
+    store = raw(url="https://danariveramerch.shop/", title="Dana Rivera Shop - Official Merchandise Store", text="Dana Rivera Shop - Official Merchandise Store. Buy now", id="h2", matched_identifier="Dana Rivera", match_kind="name")
+    out2 = finalize(store, Verdict(id="h2", label="unauthorized_commercial", evidence_quote="Dana Rivera Shop - Official Merchandise Store", confidence=0.9), DANA)
+    assert out2.label == "unauthorized_commercial"

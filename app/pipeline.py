@@ -31,6 +31,12 @@ LABEL_RANK = {
     "editorial_or_fan": 3,
     "authorized_or_own": 4,
 }
+# Secondhand marketplaces: listings there are often genuine goods being resold,
+# so the engine never lets the model flag them as unauthorized on its own.
+RESALE_MARKETPLACES = {
+    "ebay.com", "poshmark.com", "depop.com", "mercari.com", "gem.app", "stockx.com",
+    "grailed.com", "vinted.com", "thredup.com", "therealreal.com", "vestiairecollective.com",
+}
 _TRACKING = re.compile(r"^(utm_|fbclid$|gclid$|ref$|ref_|mc_)")
 
 
@@ -98,6 +104,24 @@ def _slug(text: str) -> str:
     return re.sub(r"[^a-z0-9]", "", text.lower())
 
 
+def is_resale_marketplace(domain: str) -> bool:
+    """True for the resale sites above and their subdomains, plus eBay country sites (ebay.co.uk, ebay.de)."""
+    domain = domain.lower().removeprefix("www.")
+    if any(domain == site or domain.endswith("." + site) for site in RESALE_MARKETPLACES):
+        return True
+    return bool(re.fullmatch(r"(.+\.)?ebay\.(com?\.)?[a-z]{2,3}", domain))
+
+
+_COUPON = re.compile(r"\b(coupons?|promo codes?|discount codes?|voucher)\b")
+
+
+def is_store_coupon_page(raw: RawHit, identity: Identity) -> bool:
+    """A coupon page for "<name> Shop/Store" could be for the creator's real store, so it is never flagged outright."""
+    title = _norm(raw.title)
+    name = re.escape(_norm(identity.name))
+    return bool(_COUPON.search(title) and re.search(rf"{name}('s)? (shop|store)\b", title))
+
+
 def is_own_or_partner(domain: str, identity: Identity) -> bool:
     if any(domain == d or domain.endswith("." + d) for d in identity.own_domains):
         return True
@@ -161,6 +185,16 @@ def finalize(raw: RawHit, verdict: Optional[Verdict], identity: Identity) -> Hit
                 label = "unclear"
                 reason = "The quoted evidence could not be found on the page. " + reason
             confidence = min(confidence, 0.4)
+
+    if label == "unauthorized_commercial" and is_resale_marketplace(raw.domain):
+        label = "unclear"
+        reason = "Resale marketplace: this may be genuine merch being resold. " + reason
+        confidence = min(confidence, 0.5)
+
+    if label == "unauthorized_commercial" and is_store_coupon_page(raw, identity):
+        label = "unclear"
+        reason = "Coupon page for a store with the creator's name; it may be the creator's real store. " + reason
+        confidence = min(confidence, 0.5)
 
     if label in FLAGGED and not context_ok(text, identity, raw.match_kind):
         label = "unclear"
