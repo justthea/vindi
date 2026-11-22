@@ -6,177 +6,203 @@
 <title>Vindi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* ice-cream palette */
-    --cream: #fff8f0; --waffle: #fdeedd; --card: #ffffff; --ink: #2d1b3d; --muted: #7a6a88; --line: #f0e2d6;
-    --strawberry: #ff8fb8; --strawberry-soft: #ffe1ec; --strawberry-ink: #c2185b;
-    --mint: #8fe3c8; --mint-soft: #ddf7ee; --mint-ink: #12795b;
-    --vanilla: #ffd97a; --vanilla-soft: #fff3cf; --vanilla-ink: #8a5a00;
-    --lavender: #c3a6ff; --lavender-soft: #efe6ff; --lavender-ink: #5b2fc7;
-    --peach: #ffb38a; --peach-soft: #ffeadf; --peach-ink: #b04a12;
-    --sky: #8fd8ff; --sky-soft: #e0f4ff; --sky-ink: #0f6a99;
-    --grad: linear-gradient(100deg, #ff8fb8 0%, #c3a6ff 50%, #8fd8ff 100%);
-    --grad-text: linear-gradient(100deg, #ff4f93 0%, #9a6bff 55%, #2bb5e8 100%);
+    /* palette sampled from the reference image */
+    --cream: #fbf7ee; --ink: #2a2233; --muted: #7c7186; --line: #ece4d6; --white: #ffffff;
+    --butter: #f4efa1; --pink: #f8cfd4; --coral: #f2a9ae; --peach: #f7c3a3;
+    --mint: #cfe9c4; --aqua: #cff1e7; --lavender: #cbb7e4; --sky: #a8d5e5;
   }
   * { box-sizing: border-box; }
   html, body { overflow-x: hidden; }
-  body {
-    margin: 0; color: var(--ink); background: var(--cream);
-    font: 15px/1.55 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background-image:
-      radial-gradient(520px 380px at 92% -4%, rgba(255,143,184,.38), transparent 70%),
-      radial-gradient(460px 360px at -6% 18%, rgba(143,227,200,.40), transparent 70%),
-      radial-gradient(520px 420px at 105% 55%, rgba(195,166,255,.30), transparent 70%),
-      radial-gradient(520px 420px at -5% 95%, rgba(255,217,122,.35), transparent 70%);
-    background-attachment: fixed; min-height: 100vh;
-  }
-  main { max-width: 920px; margin: 0 auto; padding: 28px 16px 90px; overflow-wrap: anywhere; }
-  form > *, .stat, .card { min-width: 0; }
+  body { margin: 0; color: var(--ink); background: var(--cream); font: 15px/1.55 "Plus Jakarta Sans", Inter, -apple-system, BlinkMacSystemFont, sans-serif; }
+  a { color: inherit; }
 
-  /* header */
-  .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 26px; }
-  .logo { display: flex; align-items: center; gap: 10px; font: 800 24px/1 "Bricolage Grotesque", sans-serif; letter-spacing: -.02em; }
-  .logo-mark { width: 38px; height: 38px; border-radius: 50% 50% 46% 46%; background: var(--grad); display: grid; place-items: center; color: #fff; font-size: 20px; font-weight: 800; box-shadow: 0 6px 16px rgba(255,143,184,.45), inset 0 -4px 0 rgba(0,0,0,.06); transform: rotate(-8deg); text-shadow: 0 1px 2px rgba(45,27,61,.25); }
-  .pill { font-size: 12px; font-weight: 700; padding: 7px 13px; border-radius: 999px; background: #fff; color: var(--muted); box-shadow: 0 2px 0 var(--line); white-space: nowrap; }
-  .pill b { color: var(--lavender-ink); }
+  /* ---------- nav ---------- */
+  nav { position: relative; z-index: 3; max-width: 1180px; margin: 0 auto; padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .logo { display: flex; align-items: center; gap: 9px; font: 800 22px/1 "Bricolage Grotesque", sans-serif; letter-spacing: -.02em; }
+  .logo-mark { width: 34px; height: 34px; border-radius: 58% 42% 55% 45% / 50% 58% 42% 50%; background: var(--coral); box-shadow: inset -4px -5px 0 rgba(0,0,0,.06), inset 5px 5px 8px rgba(255,255,255,.7); display: grid; place-items: center; font-size: 17px; }
+  .pill { font-size: 13px; font-weight: 700; padding: 9px 15px; border-radius: 999px; background: var(--white); white-space: nowrap; box-shadow: 0 1px 2px rgba(42,34,51,.06); }
 
-  /* hero */
-  .hero h1 { font: 800 clamp(36px, 7vw, 64px)/.98 "Bricolage Grotesque", sans-serif; letter-spacing: -.035em; margin: 0; }
-  .grad-text { background: var(--grad-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .hero p { color: var(--muted); font-size: 17px; margin: 14px 0 24px; max-width: 560px; }
-  .scoops { display: flex; gap: 6px; margin-bottom: 14px; }
-  .scoops span { width: 14px; height: 14px; border-radius: 50%; }
+  /* ---------- hero with jelly blobs ---------- */
+  .hero { position: relative; max-width: 1180px; margin: 0 auto; padding: 46px 20px 56px; text-align: center; }
+  .blob { position: absolute; z-index: 0; pointer-events: none;
+    background: radial-gradient(circle at 30% 28%, rgba(255,255,255,.85) 0 7%, rgba(255,255,255,0) 22%), var(--c);
+    box-shadow: inset -10px -14px 22px rgba(0,0,0,.06), inset 10px 12px 18px rgba(255,255,255,.55), 0 18px 30px rgba(120,90,110,.10);
+    animation: float 9s ease-in-out infinite; }
+  .b1 { --c: var(--butter);   width: 170px; height: 120px; left: -10px; top: 10px;   border-radius: 62% 38% 57% 43% / 48% 62% 38% 52%; }
+  .b2 { --c: var(--pink);     width: 150px; height: 82px;  left: 30px;  top: 150px;  border-radius: 50% 50% 46% 54% / 60% 40% 60% 40%; animation-delay: -2s; transform: rotate(-12deg); }
+  .b3 { --c: var(--lavender); width: 150px; height: 110px; right: 40px; top: 6px;    border-radius: 41% 59% 44% 56% / 62% 39% 61% 38%; animation-delay: -4s; }
+  .b4 { --c: var(--sky);      width: 110px; height: 110px; right: -20px; top: 170px; border-radius: 50%; animation-delay: -1s; }
+  .b5 { --c: var(--peach);    width: 120px; height: 150px; left: 14%;  bottom: -30px; border-radius: 48% 52% 60% 40% / 40% 45% 55% 60%; animation-delay: -6s; }
+  .b6 { --c: var(--mint);     width: 140px; height: 74px;  right: 15%; bottom: -10px; border-radius: 60% 40% 50% 50% / 55% 50% 50% 45%; animation-delay: -3s; transform: rotate(14deg); }
+  .dot { position: absolute; z-index: 0; border-radius: 50%; background: radial-gradient(circle at 32% 30%, rgba(255,255,255,.9) 0 12%, transparent 30%), var(--c); }
+  .d1 { --c: var(--coral); width: 22px; height: 22px; left: 22%; top: 40px; } .d2 { --c: var(--sky); width: 30px; height: 30px; right: 26%; top: 30px; }
+  .d3 { --c: var(--mint); width: 18px; height: 18px; right: 9%; top: 300px; } .d4 { --c: var(--peach); width: 26px; height: 26px; left: 8%; top: 300px; }
+  @keyframes float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -10px; } }
+  @media (prefers-reduced-motion: reduce) { .blob { animation: none; } }
 
-  .banner { padding: 12px 16px; border-radius: 16px; margin-bottom: 16px; background: var(--vanilla-soft); border: 2px solid var(--vanilla); color: var(--vanilla-ink); font-weight: 700; }
-  .banner.error { background: var(--strawberry-soft); border-color: var(--strawberry); color: var(--strawberry-ink); }
+  .hero-inner { position: relative; z-index: 2; max-width: 720px; margin: 0 auto; }
+  .kicker { display: inline-block; font-size: 13px; font-weight: 800; padding: 7px 14px; border-radius: 999px; background: var(--aqua); margin-bottom: 18px; }
+  h1 { font: 800 clamp(40px, 7.4vw, 76px)/.95 "Bricolage Grotesque", sans-serif; letter-spacing: -.04em; margin: 0; }
+  h1 .hl { background: linear-gradient(180deg, transparent 58%, var(--butter) 58% 92%, transparent 92%); padding: 0 6px; }
+  .sub { color: var(--muted); font-size: 18px; margin: 16px auto 28px; max-width: 520px; }
 
-  /* form */
-  form { background: rgba(255,255,255,.82); backdrop-filter: blur(8px); border: 2px solid #fff; border-radius: 26px; padding: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; box-shadow: 0 14px 40px rgba(195,140,170,.18); }
-  label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .02em; }
-  input[type=text], textarea { width: 100%; margin-top: 6px; padding: 12px 15px; border: 2px solid var(--line); border-radius: 15px; font: inherit; color: var(--ink); background: var(--cream); transition: border-color .15s, box-shadow .15s, background .15s; }
-  input::placeholder, textarea::placeholder { color: #bcaec6; }
-  input[type=text]:focus, textarea:focus { outline: none; background: #fff; border-color: var(--strawberry); box-shadow: 0 0 0 4px var(--strawberry-soft); }
+  /* big search pill */
+  .search { display: flex; align-items: center; gap: 8px; background: var(--white); border-radius: 999px; padding: 8px 8px 8px 22px; box-shadow: 0 10px 34px rgba(120,90,110,.14), 0 0 0 1px var(--line); max-width: 640px; margin: 0 auto; }
+  .search input { flex: 1; min-width: 0; border: 0; outline: none; background: transparent; font: 600 18px/1.2 inherit; color: var(--ink); padding: 12px 0; }
+  .search input::placeholder { color: #b7adbf; font-weight: 500; }
+  .search:focus-within { box-shadow: 0 10px 34px rgba(120,90,110,.18), 0 0 0 3px var(--lavender); }
+
+  button { font: inherit; font-weight: 700; padding: 11px 18px; border-radius: 999px; border: 0; background: #efe9df; color: var(--ink); cursor: pointer; transition: transform .12s, background .15s; }
+  button:hover:not(:disabled) { background: #e7dfd2; }
+  button:active:not(:disabled) { transform: scale(.97); }
+  button.primary { background: var(--ink); color: var(--white); }
+  button.primary:hover:not(:disabled) { background: #43384f; }
+  button.big { font: 800 16px/1 "Bricolage Grotesque", sans-serif; padding: 16px 24px; }
+  button:disabled { opacity: .55; cursor: default; }
+  button.small { padding: 9px 15px; font-size: 13px; }
+
+  /* more details */
+  details { max-width: 640px; margin: 14px auto 0; text-align: left; }
+  summary { cursor: pointer; list-style: none; text-align: center; font-weight: 700; font-size: 14px; color: var(--muted); }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: " +"; } details[open] summary::after { content: " –"; }
+  .more { margin-top: 12px; background: rgba(255,255,255,.75); backdrop-filter: blur(6px); border-radius: 26px; padding: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px; }
+  label { display: block; font-size: 12px; font-weight: 800; color: var(--muted); }
+  .more input[type=text] { width: 100%; margin-top: 6px; padding: 11px 15px; border: 0; border-radius: 999px; background: var(--cream); font: 500 14px/1.3 inherit; color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); }
+  .more input[type=text]:focus { outline: none; box-shadow: inset 0 0 0 2px var(--lavender); background: var(--white); }
   .full { grid-column: 1 / -1; }
   .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-  .check { font-size: 13px; font-weight: 500; color: var(--muted); display: flex; gap: 8px; align-items: center; }
-  .check input { accent-color: var(--strawberry-ink); width: 16px; height: 16px; }
+  .check { font-size: 13px; font-weight: 600; color: var(--muted); display: flex; gap: 8px; align-items: center; }
+  .check input { accent-color: var(--ink); width: 16px; height: 16px; }
+  .alt { margin-top: 14px; display: flex; justify-content: center; }
+  .linkish { background: transparent; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; padding: 6px 10px; }
+  .linkish:hover:not(:disabled) { background: transparent; color: var(--ink); }
 
-  button { font: inherit; font-weight: 700; padding: 11px 18px; border-radius: 999px; border: 2px solid var(--line); background: #fff; color: var(--ink); cursor: pointer; transition: transform .12s, box-shadow .15s; box-shadow: 0 3px 0 var(--line); }
-  button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 0 var(--line); }
-  button:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 1px 0 var(--line); }
-  button.primary { background: var(--grad); border-color: transparent; color: var(--ink); box-shadow: 0 4px 0 #e57aa5, 0 10px 24px rgba(255,143,184,.35); }
-  button.primary:hover:not(:disabled) { box-shadow: 0 6px 0 #e57aa5, 0 14px 30px rgba(255,143,184,.45); }
-  button.big { font: 800 17px/1 "Bricolage Grotesque", sans-serif; padding: 16px 26px; }
-  button:disabled { opacity: .55; cursor: default; }
-  button.small { padding: 8px 14px; font-size: 13px; }
-
-  /* status + stats */
-  .statusbar { margin: 22px 0 12px; display: none; }
+  /* ---------- results ---------- */
+  .results { max-width: 1180px; margin: 0 auto; padding: 0 20px 90px; }
+  .banner { max-width: 720px; margin: 0 auto 18px; padding: 12px 18px; border-radius: 999px; background: var(--butter); font-weight: 700; text-align: center; font-size: 14px; }
+  .banner.error { background: var(--coral); }
+  .statusbar { max-width: 720px; margin: 0 auto 18px; display: none; text-align: center; }
   .statusbar.on { display: block; }
-  #statusText { color: var(--muted); font-size: 14px; font-weight: 500; }
-  .progress { height: 10px; background: #fff; border-radius: 99px; overflow: hidden; margin-top: 10px; box-shadow: inset 0 0 0 2px var(--line); }
-  .progress > div { height: 100%; width: 0; background: var(--grad); border-radius: 99px; transition: width .3s; }
-  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0 6px; }
+  #statusText { color: var(--muted); font-size: 14px; font-weight: 600; }
+  .progress { height: 10px; background: var(--white); border-radius: 99px; overflow: hidden; margin-top: 10px; box-shadow: inset 0 0 0 1px var(--line); }
+  .progress > div { height: 100%; width: 0; border-radius: 99px; transition: width .3s; background: linear-gradient(90deg, var(--pink), var(--lavender), var(--sky), var(--mint), var(--butter)); }
+
+  .stats { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 0 0 22px; }
   .stats[hidden] { display: none; }
-  .stat { border-radius: 22px; padding: 16px 18px; }
-  .stat .n { font: 800 36px/1 "Bricolage Grotesque", sans-serif; letter-spacing: -.02em; }
-  .stat .l { font-size: 12px; font-weight: 700; margin-top: 6px; opacity: .8; }
-  .stat.s1 { background: var(--sky-soft); color: var(--sky-ink); }
-  .stat.s2 { background: var(--strawberry-soft); color: var(--strawberry-ink); }
-  .stat.s3 { background: var(--mint-soft); color: var(--mint-ink); }
+  .stat { display: flex; align-items: baseline; gap: 8px; padding: 12px 22px; border-radius: 999px; }
+  .stat .n { font: 800 30px/1 "Bricolage Grotesque", sans-serif; letter-spacing: -.02em; }
+  .stat .l { font-size: 13px; font-weight: 700; }
+  .stat.s1 { background: var(--sky); } .stat.s2 { background: var(--coral); } .stat.s3 { background: var(--mint); }
 
-  /* filter chips */
-  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
-  .chip { padding: 8px 15px; font-size: 13px; }
-  .chip.on { background: var(--ink); border-color: var(--ink); color: #fff; box-shadow: 0 3px 0 #120a1a; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 0 0 22px; }
+  .chip { padding: 10px 16px; font-size: 14px; background: transparent; }
+  .chip:hover:not(:disabled) { background: #efe9df; }
+  .chip.on { background: var(--ink); color: var(--white); }
 
-  /* cards */
-  .card { --c: var(--line); --soft: var(--cream); --cink: var(--muted); position: relative; background: var(--card); border: 2px solid #fff; border-radius: 24px; padding: 18px 20px; margin-bottom: 14px; box-shadow: 0 8px 24px rgba(160,120,150,.12); animation: pop .35s ease both; }
-  .card.l-unauthorized_commercial { --c: var(--strawberry); --soft: var(--strawberry-soft); --cink: var(--strawberry-ink); }
-  .card.l-claimed_endorsement { --c: var(--peach); --soft: var(--peach-soft); --cink: var(--peach-ink); }
-  .card.l-unclear { --c: var(--vanilla); --soft: var(--vanilla-soft); --cink: var(--vanilla-ink); }
-  .card.l-editorial_or_fan { --c: var(--sky); --soft: var(--sky-soft); --cink: var(--sky-ink); }
-  .card.l-authorized_or_own { --c: var(--mint); --soft: var(--mint-soft); --cink: var(--mint-ink); }
-  .card { border-top: 6px solid var(--c); }
-  @keyframes pop { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
-  .card h3 { margin: 10px 0 2px; font: 700 19px/1.25 "Bricolage Grotesque", sans-serif; letter-spacing: -.01em; }
-  .card h3 a { color: inherit; text-decoration: none; }
-  .card h3 a:hover { text-decoration: underline; text-decoration-color: var(--c); text-decoration-thickness: 3px; }
-  .domain { color: var(--muted); font-size: 13px; font-weight: 500; }
-  .badge { display: inline-block; padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 800; color: var(--cink); background: var(--soft); }
-  blockquote { margin: 12px 0 10px; padding: 12px 16px; border-radius: 16px; background: var(--soft); font-size: 15px; font-weight: 500; }
-  blockquote::before { content: "“"; color: var(--cink); font: 800 26px/0 "Bricolage Grotesque", sans-serif; margin-right: 4px; vertical-align: -8px; }
-  .reason { color: #4a3a58; }
-  .meta { color: var(--muted); font-size: 12.5px; display: flex; gap: 6px 14px; flex-wrap: wrap; margin: 10px 0 12px; }
-  .meta a { color: var(--lavender-ink); font-weight: 700; }
-  .empty { text-align: center; color: var(--muted); padding: 40px 10px; border: 2px dashed var(--line); border-radius: 24px; background: rgba(255,255,255,.6); }
+  /* masonry pins */
+  #list { columns: 3 300px; column-gap: 16px; }
+  .card { --c: var(--line); break-inside: avoid; margin: 0 0 16px; background: var(--white); border-radius: 26px; overflow: hidden; box-shadow: 0 1px 2px rgba(42,34,51,.05); transition: transform .18s, box-shadow .18s; animation: pop .35s ease both; }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(120,90,110,.14); }
+  .card.l-unauthorized_commercial { --c: var(--coral); }
+  .card.l-claimed_endorsement { --c: var(--peach); }
+  .card.l-unclear { --c: var(--butter); }
+  .card.l-editorial_or_fan { --c: var(--sky); }
+  .card.l-authorized_or_own { --c: var(--mint); }
+  @keyframes pop { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .cover { position: relative; background: radial-gradient(circle at 18% 14%, rgba(255,255,255,.7) 0 6%, transparent 20%), var(--c); padding: 18px 18px 22px; }
+  .badge { display: inline-block; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 800; background: rgba(255,255,255,.78); }
+  .quote { margin: 14px 0 0; font: 700 19px/1.25 "Bricolage Grotesque", sans-serif; letter-spacing: -.01em; }
+  .quote::before { content: "“"; } .quote::after { content: "”"; }
+  .body { padding: 14px 18px 18px; }
+  .card h3 { margin: 0 0 2px; font-size: 15px; font-weight: 800; line-height: 1.3; }
+  .card h3 a { text-decoration: none; } .card h3 a:hover { text-decoration: underline; }
+  .domain { color: var(--muted); font-size: 13px; font-weight: 600; }
+  .reason { color: #4d4357; font-size: 14px; margin-top: 8px; }
+  .meta { color: var(--muted); font-size: 12px; display: flex; gap: 4px 12px; flex-wrap: wrap; margin: 10px 0 12px; }
+  .meta a { font-weight: 800; color: var(--ink); }
+  .empty { column-span: all; text-align: center; color: var(--muted); padding: 40px 10px; border-radius: 26px; background: var(--white); }
 
-  /* draft dialog */
-  dialog { width: min(780px, 94vw); border: 0; border-radius: 28px; padding: 0; background: var(--cream); color: var(--ink); box-shadow: 0 30px 80px rgba(90,50,90,.3); }
-  dialog::backdrop { background: rgba(255,225,236,.55); backdrop-filter: blur(6px); }
+  /* ---------- draft dialog ---------- */
+  dialog { width: min(760px, 94vw); border: 0; border-radius: 30px; padding: 0; background: var(--cream); color: var(--ink); box-shadow: 0 30px 80px rgba(80,50,80,.25); }
+  dialog::backdrop { background: rgba(203,183,228,.45); backdrop-filter: blur(6px); }
   .dlg { padding: 24px 26px 26px; }
   .dlg h2 { margin: 0 0 4px; font: 800 22px/1.2 "Bricolage Grotesque", sans-serif; letter-spacing: -.01em; }
-  .dlg .domain a { color: var(--lavender-ink); }
-  .panel { border-radius: 18px; padding: 14px 16px; margin: 14px 0; background: var(--mint-soft); font-size: 14px; }
-  .panel strong { display: block; margin-bottom: 8px; color: var(--mint-ink); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+  .dlg .domain a { font-weight: 700; }
+  .panel { border-radius: 22px; padding: 14px 18px; margin: 14px 0; background: var(--aqua); font-size: 14px; }
+  .panel strong { display: block; margin-bottom: 8px; font-size: 12px; letter-spacing: .05em; text-transform: uppercase; }
   .panel dl { margin: 0; display: grid; grid-template-columns: 150px 1fr; gap: 6px 12px; }
-  .panel dt { color: var(--mint-ink); font-weight: 600; text-transform: capitalize; } .panel dd { margin: 0; }
+  .panel dt { color: #3f6b5e; font-weight: 700; text-transform: capitalize; } .panel dd { margin: 0; }
   .panel pre { white-space: pre-wrap; font: inherit; margin: 0; }
-  textarea#body { min-height: 230px; line-height: 1.55; background: #fff; }
-  #evidence { color: var(--mint-ink); font-weight: 700; }
+  .dlg label input[type=text], .dlg textarea { width: 100%; margin-top: 6px; padding: 12px 15px; border: 0; border-radius: 18px; font: inherit; color: var(--ink); background: var(--white); box-shadow: inset 0 0 0 1px var(--line); }
+  .dlg input:focus, .dlg textarea:focus { outline: none; box-shadow: inset 0 0 0 2px var(--lavender); }
+  textarea#body { min-height: 230px; line-height: 1.55; }
+  #evidence { font-weight: 700; color: #3f6b5e; }
+  .dlg .chip { background: var(--white); } .dlg .chip.on { background: var(--ink); color: var(--white); }
   .fine { color: var(--muted); font-size: 12px; margin-top: 12px; }
 
   @media (max-width: 640px) {
-    form { grid-template-columns: 1fr; }
+    .more { grid-template-columns: 1fr; }
     .panel dl { grid-template-columns: 1fr; }
-    .stats { gap: 8px; }
-    .stat .n { font-size: 26px; }
-    .top .pill { display: none; }
+    .search { padding-left: 16px; } .search input { font-size: 16px; }
+    button.big { padding: 14px 16px; }
+    .b1, .b3 { transform: scale(.6); } .b2, .b5, .b6 { display: none; }
+    nav .pill { display: none; }
   }
 </style>
 </head>
 <body>
-<main>
-  <header class="top">
-    <div class="logo"><span class="logo-mark">V</span>Vindi</div>
-    <span class="pill">Live web search by <b>You.com</b></span>
-  </header>
+<nav>
+  <div class="logo"><span class="logo-mark">V</span>Vindi</div>
+  <span class="pill">Powered by You.com live search</span>
+</nav>
 
+<form id="form">
   <section class="hero">
-    <div class="scoops"><span style="background:#ff8fb8"></span><span style="background:#8fe3c8"></span><span style="background:#ffd97a"></span><span style="background:#c3a6ff"></span><span style="background:#8fd8ff"></span></div>
-    <h1>Who's cashing in on <span class="grad-text">your name?</span></h1>
-    <p>Find every store selling with your name, handle or catchphrase. Then turn them into paying partners.</p>
-  </section>
-  <div id="banner" class="banner" hidden></div>
-
-  <form id="form">
-    <div><label>Your name<input type="text" id="name" required placeholder="Dana Rivera"></label></div>
-    <div><label>Handles<input type="text" id="handles" placeholder="@danabakes, @dana.rivera"></label></div>
-    <div><label>Catchphrases or product names<input type="text" id="phrases" placeholder="crumb goals"></label></div>
-    <div><label>Brands you already work with<input type="text" id="partners" placeholder="King Arthur, Le Creuset"></label></div>
-    <div><label>Your own sites<input type="text" id="own" placeholder="danabakes.com"></label></div>
-    <div><label>Your niche<input type="text" id="niche" placeholder="baking, sourdough"></label></div>
-    <div class="full row">
-      <button class="primary big" id="go" type="submit">Scan the live web</button>
-      <button type="button" id="loadCached">Load last saved scan</button>
-      <label class="check"><input type="checkbox" id="strict"> My name is common. Only flag pages that also mention a handle or niche.</label>
+    <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
+    <span class="blob b4"></span><span class="blob b5"></span><span class="blob b6"></span>
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="dot d4"></span>
+    <div class="hero-inner">
+      <span class="kicker">For creators without a legal team</span>
+      <h1>Who's cashing in on <span class="hl">your name?</span></h1>
+      <p class="sub">Find every store selling with your name, handle or catchphrase. Then turn them into paying partners.</p>
+      <div class="search">
+        <input type="text" id="name" required placeholder="Type your creator name" aria-label="Your name">
+        <button class="primary big" id="go" type="submit">Scan the web</button>
+      </div>
+      <details>
+        <summary>Add handles, partners and more</summary>
+        <div class="more">
+          <div><label>Handles<input type="text" id="handles" placeholder="@danabakes, @dana.rivera"></label></div>
+          <div><label>Catchphrases or product names<input type="text" id="phrases" placeholder="crumb goals"></label></div>
+          <div><label>Brands you already work with<input type="text" id="partners" placeholder="King Arthur, Le Creuset"></label></div>
+          <div><label>Your own sites<input type="text" id="own" placeholder="danabakes.com"></label></div>
+          <div class="full"><label>Your niche<input type="text" id="niche" placeholder="baking, sourdough"></label></div>
+          <label class="check full"><input type="checkbox" id="strict"> My name is common. Only flag pages that also mention a handle or niche.</label>
+        </div>
+      </details>
+      <div class="alt"><button type="button" class="linkish" id="loadCached">Load last saved scan</button></div>
     </div>
-  </form>
+  </section>
+</form>
 
+<section class="results">
+  <div id="banner" class="banner" hidden></div>
   <div class="statusbar" id="status">
     <div id="statusText"></div>
     <div class="progress"><div id="bar"></div></div>
   </div>
   <div class="stats" id="stats" hidden>
-    <div class="stat s1"><div class="n" id="stPages">0</div><div class="l">pages checked</div></div>
-    <div class="stat s2"><div class="n" id="stFlagged">0</div><div class="l">selling with your name</div></div>
-    <div class="stat s3"><div class="n" id="stTime">0s</div><div class="l">scan time</div></div>
+    <div class="stat s1"><span class="n" id="stPages">0</span><span class="l">pages checked</span></div>
+    <div class="stat s2"><span class="n" id="stFlagged">0</span><span class="l">selling with your name</span></div>
+    <div class="stat s3"><span class="n" id="stTime">0s</span><span class="l">scan time</span></div>
   </div>
   <div class="chips" id="chips"></div>
   <div id="list"></div>
-</main>
+</section>
 
 <dialog id="dialog">
   <div class="dlg">
@@ -210,6 +236,7 @@ const LABELS = {
   editorial_or_fan: '📰 Press or fan page',
   authorized_or_own: '✅ Yours or a partner',
 };
+const PALETTE = ['pink', 'butter', 'lavender', 'sky', 'mint', 'peach', 'aqua', 'coral'];
 const RANK = { unauthorized_commercial: 0, claimed_endorsement: 1, unclear: 2, editorial_or_fan: 3, authorized_or_own: 4 };
 const FILTERS = {
   flagged: { name: 'Potential unauthorized use', test: (h) => RANK[h.label] <= 1 },
@@ -325,7 +352,7 @@ async function loadCached() {
     const id = data.identity, join = (a) => (a || []).join(', ');
     $('name').value = id.name; $('handles').value = join((id.handles || []).map((h) => '@' + h.replace(/^@/, '')));
     $('phrases').value = join(id.phrases); $('partners').value = join(id.partners);
-    $('own').value = join(id.own_domains); $('niche').value = join(id.niche); $('strict').checked = !!id.strict_name_match;
+    $('own').value = join(id.own_domains); document.querySelector('details').open = true; $('niche').value = join(id.niche); $('strict').checked = !!id.strict_name_match;
     banner('Showing a saved scan from ' + new Date(data.saved_at).toLocaleString() + '. This is not a live result.');
     setStatus(`Saved scan: ${data.summary.pages_checked} results checked, ${data.summary.flagged} flagged.`, 1);
     render(); updateStats(data.summary.pages_checked, data.summary.elapsed_seconds);
@@ -361,16 +388,22 @@ function card(hit) {
   if (hit.commercial_signal) meta.append(el('span', {}, 'Sale signal: ' + hit.commercial_signal));
   if (hit.page_age) meta.append(el('span', {}, 'Page dated ' + String(hit.page_age).slice(0, 10)));
   meta.append(safeLink(hit.url, 'Open source page'));
-  const node = el('div', { class: 'card l-' + hit.label },
-    el('span', { class: 'badge b-' + hit.label }, LABELS[hit.label] || hit.label),
+  const body = el('div', { class: 'body' },
     el('h3', {}, safeLink(hit.url, hit.title || hit.url)),
     el('div', { class: 'domain' }, hit.domain),
-    el('blockquote', {}, hit.evidence_quote || hit.description || '(no text captured)'),
     el('div', { class: 'reason' }, hit.reason),
     meta,
   );
+  const tint = PALETTE[[...hit.url].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 7) % PALETTE.length];
+  const node = el('div', { class: 'card l-' + hit.label, style: '--c: var(--' + tint + ')' },
+    el('div', { class: 'cover' },
+      el('span', { class: 'badge' }, LABELS[hit.label] || hit.label),
+      el('p', { class: 'quote' }, hit.evidence_quote || hit.description || '(no text captured)'),
+    ),
+    body,
+  );
   if (hit.suggested_action !== 'none') {
-    node.append(el('div', { class: 'row' },
+    body.append(el('div', { class: 'row' },
       el('button', { class: 'primary small', type: 'button', onclick: () => openDraft(hit, 'deal') }, '🤝 Offer a deal'),
       el('button', { class: 'small', type: 'button', onclick: () => openDraft(hit, 'stop') }, '✋ Ask them to stop'),
     ));
