@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tollbooth</title>
+<style>
+  :root {
+    --ink: #16181d; --muted: #5f6672; --line: #e2e5ea; --bg: #f6f7f9; --card: #fff;
+    --accent: #1f3fd1; --red: #b42318; --red-bg: #fdecea; --orange: #a4500f; --orange-bg: #fdf0e3;
+    --gray-bg: #eef0f3; --green: #1d6b3a; --green-bg: #e6f4ea; --blue: #1b4f8f; --blue-bg: #e7f0fb;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif; color: var(--ink); background: var(--bg); }
+  main { max-width: 880px; margin: 0 auto; padding: 28px 18px 80px; }
+  h1 { font: 700 26px/1.2 ui-monospace, "SF Mono", Menlo, monospace; margin: 0; }
+  .tagline { color: var(--muted); margin: 4px 0 20px; }
+  .banner { padding: 10px 14px; border-radius: 8px; margin-bottom: 14px; background: var(--orange-bg); color: var(--orange); font-weight: 600; }
+  .banner.error { background: var(--red-bg); color: var(--red); }
+  form, .card, .statusbar { background: var(--card); border: 1px solid var(--line); border-radius: 10px; }
+  form { padding: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px; }
+  label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  input[type=text], textarea { width: 100%; margin-top: 4px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 7px; font: inherit; color: inherit; background: #fff; }
+  input[type=text]:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  .full { grid-column: 1 / -1; }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .check { text-transform: none; letter-spacing: 0; font-size: 14px; font-weight: 400; color: var(--ink); display: flex; gap: 8px; align-items: center; }
+  button { font: inherit; font-weight: 600; padding: 9px 14px; border-radius: 7px; border: 1px solid var(--line); background: #fff; color: var(--ink); cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button:disabled { opacity: .55; cursor: default; }
+  button.small { padding: 6px 10px; font-size: 13px; }
+  .statusbar { margin: 16px 0 10px; padding: 12px 14px; display: none; }
+  .statusbar.on { display: block; }
+  .progress { height: 4px; background: var(--gray-bg); border-radius: 2px; overflow: hidden; margin-top: 8px; }
+  .progress > div { height: 100%; width: 0; background: var(--accent); transition: width .25s; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
+  .chip { padding: 6px 12px; border-radius: 999px; font-size: 13px; }
+  .chip.on { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .card { padding: 14px 16px; margin-bottom: 10px; }
+  .card h3 { margin: 6px 0 2px; font-size: 16px; }
+  .card h3 a { color: inherit; text-decoration: none; }
+  .card h3 a:hover { text-decoration: underline; }
+  .domain { color: var(--muted); font-size: 13px; }
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+  .b-unauthorized_commercial { background: var(--red-bg); color: var(--red); }
+  .b-claimed_endorsement { background: var(--orange-bg); color: var(--orange); }
+  .b-unclear { background: var(--gray-bg); color: var(--muted); }
+  .b-editorial_or_fan { background: var(--blue-bg); color: var(--blue); }
+  .b-authorized_or_own { background: var(--green-bg); color: var(--green); }
+  blockquote { margin: 10px 0 8px; padding: 8px 12px; border-left: 3px solid var(--line); background: var(--bg); border-radius: 0 6px 6px 0; }
+  .meta { color: var(--muted); font-size: 13px; display: flex; gap: 12px; flex-wrap: wrap; margin: 6px 0 10px; }
+  .meta a { color: var(--accent); }
+  .empty { text-align: center; color: var(--muted); padding: 34px 10px; }
+  dialog { width: min(760px, 94vw); border: 1px solid var(--line); border-radius: 12px; padding: 0; }
+  dialog::backdrop { background: rgba(15, 18, 25, .45); }
+  .dlg { padding: 18px 20px 20px; }
+  .dlg h2 { margin: 0 0 4px; font-size: 18px; }
+  .panel { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin: 12px 0; background: var(--bg); font-size: 14px; }
+  .panel dl { margin: 0; display: grid; grid-template-columns: 150px 1fr; gap: 4px 10px; }
+  .panel dt { color: var(--muted); } .panel dd { margin: 0; }
+  .panel pre { white-space: pre-wrap; font: inherit; margin: 0; }
+  textarea#body { min-height: 230px; }
+  .fine { color: var(--muted); font-size: 12px; margin-top: 10px; }
+  @media (max-width: 640px) { form { grid-template-columns: 1fr; } .panel dl { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>&gt;_ Tollbooth</h1>
+  <p class="tagline">Find who is selling with your name, and turn them into paying partners.</p>
+  <div id="banner" class="banner" hidden></div>
+
+  <form id="form">
+    <div><label>Your name<input type="text" id="name" required placeholder="Dana Rivera"></label></div>
+    <div><label>Handles<input type="text" id="handles" placeholder="@danabakes, @dana.rivera"></label></div>
+    <div><label>Catchphrases or product names<input type="text" id="phrases" placeholder="crumb goals"></label></div>
+    <div><label>Brands you already work with<input type="text" id="partners" placeholder="King Arthur, Le Creuset"></label></div>
+    <div><label>Your own sites<input type="text" id="own" placeholder="danabakes.com"></label></div>
+    <div><label>Your niche (keywords)<input type="text" id="niche" placeholder="baking, sourdough"></label></div>
+    <div class="full row">
+      <button class="primary" id="go" type="submit">Scan the live web</button>
+      <button type="button" id="loadCached">Load last saved scan</button>
+      <label class="check"><input type="checkbox" id="strict"> My name is common. Only flag pages that also mention a handle or niche keyword.</label>
+    </div>
+  </form>
+
+  <div class="statusbar" id="status">
+    <div id="statusText"></div>
+    <div class="progress"><div id="bar"></div></div>
+  </div>
+  <div class="chips" id="chips"></div>
+  <div id="list"></div>
+</main>
+
+<dialog id="dialog">
+  <div class="dlg">
+    <div class="row" style="justify-content: space-between">
+      <h2 id="dTitle"></h2>
+      <button class="small" id="dClose" type="button">Close</button>
+    </div>
+    <div class="domain" id="dSource"></div>
+    <div class="panel" id="brief">Looking up this seller&hellip;</div>
+    <div class="row">
+      <button class="chip" id="modeDeal" type="button">Offer a deal</button>
+      <button class="chip" id="modeStop" type="button">Ask them to stop</button>
+    </div>
+    <label style="margin-top: 12px">Subject<input type="text" id="subject"></label>
+    <label style="margin-top: 10px">Email (edit before sending)<textarea id="body"></textarea></label>
+    <div class="meta" id="evidence"></div>
+    <div class="row">
+      <button class="primary" id="copy" type="button">Copy email</button>
+      <button id="mail" type="button">Open in mail app</button>
+    </div>
+    <p class="fine">Tollbooth flags pages for you to review. It does not decide whether a use is lawful, and this draft is not legal advice. You send it yourself, from your own address.</p>
+  </div>
+</dialog>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const LABELS = {
+  unauthorized_commercial: 'Selling with your name',
+  claimed_endorsement: 'Claims your endorsement',
+  unclear: 'Needs your review',
+  editorial_or_fan: 'Press or fan page',
+  authorized_or_own: 'Yours or a partner',
+};
+const RANK = { unauthorized_commercial: 0, claimed_endorsement: 1, unclear: 2, editorial_or_fan: 3, authorized_or_own: 4 };
+const FILTERS = {
+  flagged: { name: 'Potential unauthorized use', test: (h) => RANK[h.label] <= 1 },
+  review: { name: 'Needs review', test: (h) => h.label === 'unclear' },
+  other: { name: 'No action', test: (h) => RANK[h.label] >= 3 },
+  all: { name: 'All', test: () => true },
+};
+const state = { identity: null, hits: [], filter: 'flagged', scanning: false, done: null, briefs: new Map(), current: null, mode: 'deal' };
+
+// All page-derived text is untrusted, so it only ever reaches the DOM as text nodes.
+function el(tag, props = {}, ...children) {
+  const node = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (k === 'class') node.className = v;
+    else if (k === 'onclick') node.addEventListener('click', v);
+    else node.setAttribute(k, v);
+  }
+  for (const child of children) node.append(child instanceof Node ? child : document.createTextNode(String(child ?? '')));
+  return node;
+}
+function safeLink(url, text) {
+  const ok = /^https?:\/\//i.test(url || '');
+  return ok ? el('a', { href: url, target: '_blank', rel: 'noopener noreferrer' }, text) : el('span', {}, text);
+}
+const split = (v) => v.split(',').map((s) => s.trim()).filter(Boolean);
+function banner(text, isError) {
+  const b = $('banner');
+  b.hidden = !text; b.textContent = text || ''; b.className = 'banner' + (isError ? ' error' : '');
+}
+async function postJSON(url, body) {
+  const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || ('Request failed: ' + res.status));
+  return data;
+}
+
+// ---- scan -------------------------------------------------------------------
+function readIdentity() {
+  return {
+    name: $('name').value.trim(), handles: split($('handles').value), phrases: split($('phrases').value),
+    partners: split($('partners').value), own_domains: split($('own').value), niche: split($('niche').value),
+    strict_name_match: $('strict').checked,
+  };
+}
+function setStatus(text, fraction) {
+  $('status').classList.add('on');
+  $('statusText').textContent = text;
+  if (fraction != null) $('bar').style.width = Math.round(fraction * 100) + '%';
+}
+function handleEvent(name, data) {
+  if (name === 'status' && data.stage === 'searching') {
+    setStatus(`Searching the live web with You.com: ${data.queries_done} of ${data.queries_total} queries, ${data.pages_checked} results so far`, 0.6 * data.queries_done / Math.max(1, data.queries_total));
+  } else if (name === 'status' && data.stage === 'classifying') {
+    setStatus(`Checked ${data.pages_checked} results. Reading ${data.candidates} pages that mention you`, 0.65);
+  } else if (name === 'hit') {
+    state.hits.push(data); render();
+  } else if (name === 'done') {
+    state.done = data;
+    const errors = (data.errors || []).length ? ` ${data.errors.length} step(s) failed and were skipped.` : '';
+    setStatus(`Done in ${data.elapsed_seconds}s. ${data.queries} queries, ${data.pages_checked} results checked, ${data.flagged} flagged.` + errors, 1);
+    render();
+    state.hits.filter(FILTERS.flagged.test).sort(byRank).slice(0, 3).forEach(getBrief); // have briefs ready before a click
+  } else if (name === 'error') {
+    banner('Scan failed: ' + data.message, true);
+  }
+}
+async function runScan(event) {
+  event.preventDefault();
+  if (state.scanning) return;
+  state.identity = readIdentity();
+  state.hits = []; state.done = null; state.scanning = true; state.briefs.clear();
+  $('go').disabled = true; banner(state.mock ? MOCK_TEXT : '');
+  render(); setStatus('Starting scan', 0.02);
+  try {
+    const res = await fetch('/api/scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.identity) });
+    if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || ('HTTP ' + res.status)); }
+    const reader = res.body.getReader(); const decoder = new TextDecoder(); let buffer = '';
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      let cut;
+      while ((cut = buffer.indexOf('\n\n')) >= 0) {
+        const block = buffer.slice(0, cut); buffer = buffer.slice(cut + 2);
+        let name = 'message', payload = '';
+        for (const line of block.split('\n')) {
+          if (line.startsWith('event:')) name = line.slice(6).trim();
+          else if (line.startsWith('data:')) payload += line.slice(5).trim();
+        }
+        if (payload) handleEvent(name, JSON.parse(payload));
+      }
+    }
+  } catch (err) {
+    banner('Scan failed: ' + err.message, true);
+  } finally {
+    state.scanning = false; $('go').disabled = false; render();
+  }
+}
+async function loadCached() {
+  try {
+    const res = await fetch('/api/cached');
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    state.identity = data.identity; state.hits = data.hits; state.done = data.summary;
+    $('name').value = data.identity.name;
+    banner('Showing a saved scan from ' + new Date(data.saved_at).toLocaleString() + '. This is not a live result.');
+    setStatus(`Saved scan: ${data.summary.pages_checked} results checked, ${data.summary.flagged} flagged.`, 1);
+    render();
+  } catch (err) { banner(err.message || 'No saved scan yet', true); }
+}
+
+// ---- results ----------------------------------------------------------------
+const byRank = (a, b) => RANK[a.label] - RANK[b.label] || b.confidence - a.confidence;
+function render() {
+  const chips = $('chips'); chips.replaceChildren();
+  if (state.hits.length) {
+    for (const [key, f] of Object.entries(FILTERS)) {
+      const count = state.hits.filter(f.test).length;
+      chips.append(el('button', { class: 'chip' + (state.filter === key ? ' on' : ''), type: 'button', onclick: () => { state.filter = key; render(); } }, `${f.name} (${count})`));
+    }
+  }
+  const list = $('list'); list.replaceChildren();
+  const shown = state.hits.filter(FILTERS[state.filter].test).sort(byRank);
+  for (const hit of shown) list.append(card(hit));
+  if (!shown.length && state.done) {
+    const none = !state.hits.length;
+    list.append(el('div', { class: 'empty' }, none
+      ? 'No pages using your name turned up in this scan. Try adding a handle or a catchphrase, then scan again.'
+      : 'Nothing in this group. Try another filter above.'));
+  }
+}
+function card(hit) {
+  const meta = el('div', { class: 'meta' },
+    el('span', {}, Math.round(hit.confidence * 100) + '% confidence'),
+    el('span', {}, hit.quote_verified ? 'Quote found on page' : 'Quote not verified'),
+  );
+  if (hit.snippet_only) meta.append(el('span', {}, 'Snippet only'));
+  if (hit.commercial_signal) meta.append(el('span', {}, 'Sale signal: ' + hit.commercial_signal));
+  if (hit.page_age) meta.append(el('span', {}, 'Page dated ' + String(hit.page_age).slice(0, 10)));
+  meta.append(safeLink(hit.url, 'Open source page'));
+  const node = el('div', { class: 'card' },
+    el('span', { class: 'badge b-' + hit.label }, LABELS[hit.label] || hit.label),
+    el('h3', {}, safeLink(hit.url, hit.title || hit.url)),
+    el('div', { class: 'domain' }, hit.domain),
+    el('blockquote', {}, hit.evidence_quote || hit.description || '(no text captured)'),
+    el('div', {}, hit.reason),
+    meta,
+  );
+  if (hit.suggested_action !== 'none') {
+    node.append(el('div', { class: 'row' },
+      el('button', { class: 'primary small', type: 'button', onclick: () => openDraft(hit, 'deal') }, 'Offer a deal'),
+      el('button', { class: 'small', type: 'button', onclick: () => openDraft(hit, 'stop') }, 'Ask them to stop'),
+    ));
+  }
+  return node;
+}
+
+// ---- brief and draft ----------------------------------------------------------
+function getBrief(hit) {
+  if (!state.briefs.has(hit.domain)) {
+    state.briefs.set(hit.domain, postJSON('/api/brief', { url: hit.url, domain: hit.domain, title: hit.title }).catch((err) => ({ error: err.message })));
+  }
+  return state.briefs.get(hit.domain);
+}
+function briefText(brief) {
+  if (!brief || brief.error) return '';
+  return typeof brief.content === 'string' ? brief.content : JSON.stringify(brief.content);
+}
+function showBrief(brief) {
+  const box = $('brief'); box.replaceChildren();
+  if (brief.error) { box.append('Seller lookup failed: ' + brief.error); return; }
+  box.append(el('strong', {}, 'About this seller (You.com Research)'));
+  if (brief.content_type === 'object' && brief.content) {
+    const dl = el('dl', {});
+    for (const [k, v] of Object.entries(brief.content)) dl.append(el('dt', {}, k.replace(/_/g, ' ')), el('dd', {}, typeof v === 'string' ? v : JSON.stringify(v)));
+    box.append(dl);
+  } else {
+    box.append(el('pre', {}, brief.content || 'Nothing found.'));
+  }
+  if ((brief.sources || []).length) {
+    const src = el('div', { class: 'meta' }, 'Sources:');
+    brief.sources.slice(0, 4).forEach((s) => src.append(safeLink(s.url, s.title || s.url)));
+    box.append(src);
+  }
+}
+async function openDraft(hit, mode) {
+  state.current = hit; state.mode = mode;
+  $('dTitle').textContent = hit.title || hit.domain;
+  const source = $('dSource'); source.replaceChildren(safeLink(hit.url, hit.url));
+  $('brief').textContent = 'Looking up this seller…';
+  $('dialog').showModal();
+  getBrief(hit).then((b) => { if (state.current === hit) showBrief(b); });
+  await writeDraft();
+}
+async function writeDraft() {
+  const hit = state.current, mode = state.mode;
+  $('modeDeal').classList.toggle('on', mode === 'deal');
+  $('modeStop').classList.toggle('on', mode === 'stop');
+  $('subject').value = ''; $('body').value = 'Writing draft…'; $('evidence').textContent = '';
+  // Use the brief if it is already in; do not make the creator wait for it.
+  const brief = await Promise.race([getBrief(hit), new Promise((r) => setTimeout(() => r(null), 50))]);
+  try {
+    const out = await postJSON('/api/draft', { identity: state.identity, hit, mode, brief: briefText(brief) || null });
+    if (state.current !== hit || state.mode !== mode) return;
+    $('subject').value = out.subject; $('body').value = out.body;
+    const ev = out.evidence || {};
+    const when = ev.checked_at ? new Date(ev.checked_at).toLocaleTimeString() : '';
+    $('evidence').textContent = ev.quote_still_present === true ? `Page re-read at ${when}: the quoted words are still there.`
+      : ev.quote_still_present === false ? `Page re-read at ${when}: the quoted words were NOT found. Open the page and check before sending.`
+      : 'Could not re-read the page just now. Open it and check before sending.';
+  } catch (err) {
+    $('body').value = ''; $('evidence').textContent = 'Draft failed: ' + err.message;
+  }
+}
+$('modeDeal').addEventListener('click', () => { state.mode = 'deal'; writeDraft(); });
+$('modeStop').addEventListener('click', () => { state.mode = 'stop'; writeDraft(); });
+$('dClose').addEventListener('click', () => $('dialog').close());
+$('copy').addEventListener('click', async () => {
+  await navigator.clipboard.writeText('Subject: ' + $('subject').value + '\n\n' + $('body').value);
+  $('copy').textContent = 'Copied'; setTimeout(() => { $('copy').textContent = 'Copy email'; }, 1500);
+});
+$('mail').addEventListener('click', async () => {
+  const brief = await Promise.race([getBrief(state.current), new Promise((r) => setTimeout(() => r(null), 50))]);
+  const found = briefText(brief).match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+  location.href = 'mailto:' + (found ? found[0] : '') + '?subject=' + encodeURIComponent($('subject').value) + '&body=' + encodeURIComponent($('body').value);
+});
+
+// ---- startup ----------------------------------------------------------------
+const MOCK_TEXT = 'MOCK DATA. These results are canned fixtures for development, not the live web.';
+$('form').addEventListener('submit', runScan);
+$('loadCached').addEventListener('click', loadCached);
+fetch('/api/health').then((r) => r.json()).then((h) => {
+  state.mock = h.mock;
+  if (h.mock) banner(MOCK_TEXT);
+  else if (!h.ready) banner('Missing settings in .env: ' + h.missing.join(', '), true);
+}).catch(() => {});
+</script>
+</body>
+</html>
