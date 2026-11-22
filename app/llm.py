@@ -66,7 +66,9 @@ def extract_json(text: str) -> Any:
     raise LLMError("Model reply contained no JSON")
 
 
-async def _complete(settings: Settings, system: str, user: str, max_tokens: int = 2000) -> str:
+async def _complete(settings: Settings, system: str, user: str, max_tokens: int = 8000) -> str:
+    # Current Claude models think before answering and that counts toward max_tokens,
+    # so leave room; effort "low" keeps these short labeling/drafting calls fast and cheap.
     import httpx
 
     async with httpx.AsyncClient(timeout=httpx.Timeout(60.0, connect=10.0)) as client:
@@ -78,6 +80,7 @@ async def _complete(settings: Settings, system: str, user: str, max_tokens: int 
                 json={
                     "model": settings.llm_model,
                     "max_tokens": max_tokens,
+                    "output_config": {"effort": "low"},
                     "system": system,
                     "messages": [{"role": "user", "content": user}],
                 },
@@ -156,7 +159,7 @@ async def write_draft(
         "what_the_page_does": hit.reason,
         "seller_background": (brief or "")[:2000],
     }
-    data = extract_json(await _complete(settings, DRAFT_SYSTEM, json.dumps(payload, ensure_ascii=False), 900))
+    data = extract_json(await _complete(settings, DRAFT_SYSTEM, json.dumps(payload, ensure_ascii=False), 4000))
     if not isinstance(data, dict) or not data.get("body"):
         raise LLMError("Draft reply was missing a body")
     return {"subject": str(data.get("subject", "")), "body": str(data["body"])}
