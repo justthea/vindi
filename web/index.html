@@ -266,11 +266,21 @@ function banner(text, isError) {
   const b = $('banner');
   b.hidden = !text; b.textContent = text || ''; b.className = 'banner' + (isError ? ' error' : '');
 }
-async function postJSON(url, body) {
-  const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || ('Request failed: ' + res.status));
-  return data;
+// Every call has a deadline so a slow API can never leave the page waiting forever.
+async function postJSON(url, body, timeoutMs = 60000) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: ctrl.signal });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || ('Request failed: ' + res.status));
+    return data;
+  } catch (err) {
+    if (err.name === 'AbortError') throw new Error('took too long and was stopped');
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 // ---- scan -------------------------------------------------------------------
@@ -375,7 +385,9 @@ function render() {
   if (!shown.length && state.done) {
     const none = !state.hits.length;
     list.append(el('div', { class: 'empty' }, none
-      ? 'No pages using your name turned up in this scan. Try adding a handle or a catchphrase, then scan again.'
+      ? (!state.done.pages_checked && (state.done.errors || []).length)
+        ? `The scan could not reach the web: ${state.done.errors.length} searches failed. Check the connection, or use "Load last saved scan".`
+        : `Good news: we checked ${state.done.pages_checked || 0} pages and found no one selling with your name right now. Add a handle or a catchphrase under "Add handles, partners and more" to search wider.`
       : 'Nothing in this group. Try another filter above.'));
   }
 }
@@ -414,7 +426,7 @@ function card(hit) {
 // ---- brief and draft ----------------------------------------------------------
 function getBrief(hit) {
   if (!state.briefs.has(hit.domain)) {
-    state.briefs.set(hit.domain, postJSON('/api/brief', { url: hit.url, domain: hit.domain, title: hit.title }).catch((err) => ({ error: err.message })));
+    state.briefs.set(hit.domain, postJSON('/api/brief', { url: hit.url, domain: hit.domain, title: hit.title }, 75000).catch((err) => ({ error: err.message })));
   }
   return state.briefs.get(hit.domain);
 }
@@ -424,7 +436,7 @@ function briefText(brief) {
 }
 function showBrief(brief) {
   const box = $('brief'); box.replaceChildren();
-  if (brief.error) { box.append('Seller lookup failed: ' + brief.error); return; }
+  if (brief.error) { box.append('Seller lookup ' + (brief.error.includes('too long') ? 'took too long' : 'failed') + '. The draft does not need it; you can still edit and send.'); return; }
   box.append(el('strong', {}, 'About this seller (You.com Research)'));
   if (brief.content_type === 'object' && brief.content) {
     const dl = el('dl', {});
@@ -464,7 +476,7 @@ async function writeDraft() {
     $('evidence').textContent = ev.quote_still_present === true ? `Page re-read at ${when}: the quoted words are still there.`
       : ev.quote_still_present === false && ev.name_still_present ? `Page re-read at ${when}: still live and still uses your name. The exact quote may come from the page's search listing, so check it before sending.`
       : ev.quote_still_present === false ? `Page re-read at ${when}: the quoted words were NOT found. Open the page and check before sending.`
-      : 'Could not re-read the page just now. Open it and check before sending.';
+      : 'Could not re-read the page just now. It may be offline or blocking automated visits. Open it and check before sending.';
   } catch (err) {
     $('body').value = ''; $('evidence').textContent = 'Draft failed: ' + err.message;
   }
