@@ -124,6 +124,9 @@ async def draft(request: Request):
         "refetched": fresh is not None,
         # None means we could not re-read the page, which is different from "gone".
         "quote_still_present": verify_quote(req.hit.evidence_quote, fresh) if fresh else None,
+        # Quotes often come from the page's meta description, which the page body omits,
+        # so also report whether the matched name/handle is still on the live page.
+        "name_still_present": verify_quote(req.hit.matched_identifier or req.identity.name, fresh) if fresh else None,
     }
     try:
         email = await write_draft(req.identity, req.hit, req.mode, req.brief, settings)

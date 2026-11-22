@@ -332,6 +332,7 @@ async function writeDraft() {
     const ev = out.evidence || {};
     const when = ev.checked_at ? new Date(ev.checked_at).toLocaleTimeString() : '';
     $('evidence').textContent = ev.quote_still_present === true ? `Page re-read at ${when}: the quoted words are still there.`
+      : ev.quote_still_present === false && ev.name_still_present ? `Page re-read at ${when}: still live and still uses your name. The exact quote may come from the page's search listing, so check it before sending.`
       : ev.quote_still_present === false ? `Page re-read at ${when}: the quoted words were NOT found. Open the page and check before sending.`
       : 'Could not re-read the page just now. Open it and check before sending.';
   } catch (err) {
